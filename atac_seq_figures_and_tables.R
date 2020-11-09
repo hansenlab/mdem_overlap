@@ -20,6 +20,7 @@ KS2_KS1_B_atac_promoters <- atac_B_KS2_granges2[which(atac_B_KS2_granges2$GeneID
                                                         atac_B_KS1_granges2$GeneID[which(atac_B_KS1_granges2$padj < 0.1)])][
                                                           which(qobj_KS2_KS1_B_atac_promoters$significant == TRUE)]
 
+library(Repitools)
 common_promoters_KS1_KS2_only <- annoGR2DF(KS2_KS1_B_atac_promoters)
 common_promoters_KS1_KS2_only$logFC_KS1 <- sapply(common_promoters_KS1_KS2_only$GeneID, function(xx) 
   res_B_KS1_atac$logFC[which(rownames(res_B_KS1_atac) == xx)])
@@ -381,6 +382,9 @@ length(which(permutation_dist_KS1_KS2_non_proms >= 1-qobj_KS2_KS1_B_atac_non_pro
 
 
 ###pathway enrichment analysis
+library(goseq)
+library(ReactomePA)
+library(org.Mm.eg.db)
 promoter_pathways <- getReactomeEnrichedPathways(unique(common_promoters$prom_overlapping_id), 
           unique(unlist(Reduce(intersect, list(atac_B_KS1_granges2$prom_overlapping_id, 
                                                atac_B_KS2_granges2$prom_overlapping_id, atac_B_RT_granges2$prom_overlapping_id)))))

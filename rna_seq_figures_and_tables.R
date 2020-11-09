@@ -185,6 +185,10 @@ dev.off()
 
 
 ###pathway analysis
+library(goseq)
+library(ReactomePA)
+library(org.Mm.eg.db)
+
 expression_pathways <- getReactomeEnrichedPathways(unique(common_genes_B$gene_id), 
                                                    unique(unlist(Reduce(intersect, list(rownames(res_B_KS1), 
                                                                                         rownames(res_B_KS2), rownames(res_B_RT))))))
