@@ -198,7 +198,7 @@ getCellTypeVector <- function(sample_names_vector){
   cell_type
 }
 
-###the following lines are required for the next 2 functions
+###the following lines are required for the function defined next
 library(EnsDb.Mmusculus.v79)
 library(BSgenome.Mmusculus.UCSC.mm10)
 edb_mouse <- EnsDb.Mmusculus.v79
@@ -212,36 +212,7 @@ proms_mouse <- proms_mouse[which(seqnames(proms_mouse) %in% seqnames(Mmusculus)[
 
 
 ###########
-getFullResultsDF <- function(differential_results_tab){
-  results_granges <- getDifferentialRegionGranges(count_reads_in_peaks$annotation, as.data.frame(differential_results_tab))
-  
-  overlaps <- findOverlaps(results_granges, proms_mouse)
-  overlaps_splitted <- split(overlaps, queryHits(overlaps))
-  
-  results_granges$prom_overlapping_id <- NA
-  results_granges$prom_overlapping_id[unique(queryHits(overlaps))] <- lapply(overlaps_splitted, function(xx) {
-    df <- as.data.frame(xx)
-    unique(proms_mouse$gene_id[df$subjectHits])
-  })
-  
-  results_granges$prom_overlapping_name <- NA
-  results_granges$prom_overlapping_name[unique(queryHits(overlaps))] <- lapply(overlaps_splitted, function(xx) {
-    df <- as.data.frame(xx)
-    unique(proms_mouse$gene_name[df$subjectHits])
-  })
-  
-  results_df <- values(results_granges)
-  results_df$chr <- seqnames(results_granges)
-  results_df$start <- start(results_granges)
-  results_df$end <- end(results_granges)
-  
-  results_df <- results_df[, c(11:15, 1:2, 5:8)]
-  results_df
-}
-
-
-
-getFullResultsDF2 <- function(differential_results_tab){
+getFullResultsGranges <- function(differential_results_tab){
   results_granges <- getDifferentialRegionGranges(count_reads_in_peaks$annotation, as.data.frame(differential_results_tab))
   
   overlaps <- findOverlaps(results_granges, proms_mouse)

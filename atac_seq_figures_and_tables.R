@@ -1,6 +1,6 @@
-res_B_KS1_atac$logFC <- -res_B_KS1_atac$log2FoldChange
-res_B_KS2_atac$logFC <- -res_B_KS2_atac$log2FoldChange
-res_B_RT_atac$logFC <- -res_B_RT_atac$log2FoldChange
+atac_B_KS1_granges <- getFullResultsGranges(res_B_KS1_atac) #see atac_analysis_functions.R script
+atac_B_KS2_granges <- getFullResultsGranges(res_B_KS2_atac)
+atac_B_RT_granges <- getFullResultsGranges(res_B_RT_atac)
 
 atac_B_KS1_granges$logFC <- -atac_B_KS1_granges$log2FoldChange
 atac_B_KS2_granges$logFC <- -atac_B_KS2_granges$log2FoldChange
@@ -380,24 +380,11 @@ length(which(permutation_dist_KS1_KS2_non_proms >= 1-qobj_KS2_KS1_B_atac_non_pro
 
 
 
-###compare empirical power with naive approach
-length(Reduce(intersect, list(atac_B_KS1_granges2$GeneID[which(atac_B_KS1_granges2$padj < 0.1)], 
-                       atac_B_KS2_granges2$GeneID[which(atac_B_KS2_granges2$padj < 0.1)], 
-                       atac_B_RT_granges2$GeneID[which(atac_B_RT_granges2$padj < 0.1)])))
-
-length(Reduce(intersect, list(atac_B_KS1_granges2$GeneID[which(p.adjust(atac_B_KS1_granges2$pvalue, method = "fdr") < 0.1)], 
-                       atac_B_KS2_granges2$GeneID[which(p.adjust(atac_B_KS2_granges2$pvalue, method = "fdr") < 0.1)], 
-                       atac_B_RT_granges2$GeneID[which(p.adjust(atac_B_RT_granges2$pvalue, method = "fdr") < 0.1)])))
-
-
 ###pathway enrichment analysis
 promoter_pathways <- getReactomeEnrichedPathways(unique(common_promoters$prom_overlapping_id), 
           unique(unlist(Reduce(intersect, list(atac_B_KS1_granges2$prom_overlapping_id, 
                                                atac_B_KS2_granges2$prom_overlapping_id, atac_B_RT_granges2$prom_overlapping_id)))))
 
-expression_pathways <- getReactomeEnrichedPathways(unique(common_genes_B$gene_id), 
-          unique(unlist(Reduce(intersect, list(rownames(res_B_KS1), 
-                                               rownames(res_B_KS2), rownames(res_B_RT))))))
 
 
 ####
@@ -497,31 +484,4 @@ axis(1, at = c(1, 2, 3, 4, 5), labels = c("KS1", "KS2", "RT", "KS1/KS2\ncommon",
 axis(2, at = c(0, 0.5, 1), labels = c(0, 50, 100))
 abline(v = c(1.5, 2.5, 3.5, 4.5, 5.5), lty = "longdash", col = rgb(0,0,0,0.7))
 dev.off()
-
-###
-###
-quartz(file = "RNA_effect_direction.pdf", height = 2.2, width = 2.2, pointsize = 8, type = "pdf")
-par(mar = c(5.25, 5.25, 1.25, 1.25) + 0.1)
-plot(1, prop.table(table(as.factor(res_B_KS1$logFC[which(res_B_KS1$padj < 0.1)] > 0)))[2], pch = 19, 
-     col = alpha("red", 0.75), xlab = "", ylab = "% changes towards\ngreater expression", main = "", font.main = 1, 
-     xlim = c(0.8, 5.2), ylim = c(0, 1), xaxt = 'n', bty = 'l', yaxt = 'n', bty = "l", cex = 1.25, cex.lab = 1.2)
-points(2, prop.table(table(as.factor(res_B_KS2$logFC[which(res_B_KS2$padj < 0.1)] > 0)))[2], pch = 19, 
-       col = alpha("red", 0.75), cex = 1.25)
-points(3, prop.table(table(as.factor(res_B_RT$logFC[which(res_B_RT$padj < 0.1)] > 0)))[2], pch = 19, 
-       col = alpha("red", 0.75), cex = 1.25)
-points(4, prop.table(table(as.factor(KS2_KS1_B$logFC > 0)))[2], pch = 19, 
-       col = alpha("red", 0.75), cex = 1.25)
-points(5, prop.table(table(as.factor(KS2_KS1_RT_B$logFC > 0)))[2], pch = 19, 
-       col = alpha("red", 0.75), cex = 1.25)
-#points(7, 1-qobj_RT_KS2_KS1_B_atac_promoters$pi0, pch = 19, 
-#       col = alpha("brown", 0.75), xlab = "", ylab = "% shared differentially accessible\nregulatory elements", main = "")
-
-#points(8, 1-qobj_RT_KS2_KS1_B_atac_non_promoters$pi0, pch = 19, 
-#       col = alpha("forest green", 1), xlab = "", ylab = "% shared differentially accessible\nregulatory elements", main = "")
-
-axis(1, at = c(1, 2, 3, 4, 5), labels = c("KS1", "KS2", "RT", "KS1/KS2\ncommon", "KS1/KS2/RT\ncommon"), cex.axis = 0.84, las = 2)
-axis(2, at = c(0, 0.5, 1), labels = c(0, 50, 100))
-abline(v = c(1.5, 2.5, 3.5, 4.5, 5.5), lty = "longdash", col = rgb(0,0,0,0.7))
-dev.off()
-
 

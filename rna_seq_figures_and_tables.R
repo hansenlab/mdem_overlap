@@ -1,4 +1,4 @@
-####need to do this so that negative logFC corresponds to downregulation in mutants
+####need to do this so that negative logFC corresponds to downregulation in mutants. These are the differential result tables containing logFC, pval etc
 res_B_KS1$logFC <- -res_B_KS1$log2FoldChange
 res_B_KS2$logFC <- -res_B_KS2$log2FoldChange
 res_B_RT$logFC <- -res_B_RT$log2FoldChange
@@ -157,15 +157,37 @@ axis(2, at = c(-1.5, 1.5), cex.axis = 1.2)
 dev.off()
 
 
-
-
-
-
-
 ##############
+quartz(file = "RNA_effect_direction.pdf", height = 2.2, width = 2.2, pointsize = 8, type = "pdf")
+par(mar = c(5.25, 5.25, 1.25, 1.25) + 0.1)
+plot(1, prop.table(table(as.factor(res_B_KS1$logFC[which(res_B_KS1$padj < 0.1)] > 0)))[2], pch = 19, 
+     col = alpha("red", 0.75), xlab = "", ylab = "% changes towards\ngreater expression", main = "", font.main = 1, 
+     xlim = c(0.8, 5.2), ylim = c(0, 1), xaxt = 'n', bty = 'l', yaxt = 'n', bty = "l", cex = 1.25, cex.lab = 1.2)
+points(2, prop.table(table(as.factor(res_B_KS2$logFC[which(res_B_KS2$padj < 0.1)] > 0)))[2], pch = 19, 
+       col = alpha("red", 0.75), cex = 1.25)
+points(3, prop.table(table(as.factor(res_B_RT$logFC[which(res_B_RT$padj < 0.1)] > 0)))[2], pch = 19, 
+       col = alpha("red", 0.75), cex = 1.25)
+points(4, prop.table(table(as.factor(KS2_KS1_B$logFC > 0)))[2], pch = 19, 
+       col = alpha("red", 0.75), cex = 1.25)
+points(5, prop.table(table(as.factor(KS2_KS1_RT_B$logFC > 0)))[2], pch = 19, 
+       col = alpha("red", 0.75), cex = 1.25)
+#points(7, 1-qobj_RT_KS2_KS1_B_atac_promoters$pi0, pch = 19, 
+#       col = alpha("brown", 0.75), xlab = "", ylab = "% shared differentially accessible\nregulatory elements", main = "")
+
+#points(8, 1-qobj_RT_KS2_KS1_B_atac_non_promoters$pi0, pch = 19, 
+#       col = alpha("forest green", 1), xlab = "", ylab = "% shared differentially accessible\nregulatory elements", main = "")
+
+axis(1, at = c(1, 2, 3, 4, 5), labels = c("KS1", "KS2", "RT", "KS1/KS2\ncommon", "KS1/KS2/RT\ncommon"), cex.axis = 0.84, las = 2)
+axis(2, at = c(0, 0.5, 1), labels = c(0, 50, 100))
+abline(v = c(1.5, 2.5, 3.5, 4.5, 5.5), lty = "longdash", col = rgb(0,0,0,0.7))
+dev.off()
 
 
 
+###pathway analysis
+expression_pathways <- getReactomeEnrichedPathways(unique(common_genes_B$gene_id), 
+                                                   unique(unlist(Reduce(intersect, list(rownames(res_B_KS1), 
+                                                                                        rownames(res_B_KS2), rownames(res_B_RT))))))
 
 
 
