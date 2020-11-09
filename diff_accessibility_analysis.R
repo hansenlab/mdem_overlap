@@ -8,8 +8,8 @@ sample_info <- data.frame(genotype = getGenotypeVector(colnames(peaks_by_samples
                           cell_type = getCellTypeVector(colnames(peaks_by_samples)))
 
 
-genotype <- "RT1" #or KS2, or RT
-celltype <- "B"  #or B cells
+genotype <- "KS1" #or KS2, or RT
+celltype <- "B"  
 
 features_by_samples_mat <- peaks_by_samples[, which(sample_info$genotype %in% c("WT", genotype) & 
                                                              sample_info$cell_type == celltype)]
@@ -28,10 +28,14 @@ mod0 <- model.matrix(~1, colData(dds))
 svseq <- svaseq(dat, mod, mod0)
 
 ddssva <- dds
+
+#the following lines depend on how many SVs are estimated
 ddssva$SV1 <- svseq$sv[,1]
 ddssva$SV2 <- svseq$sv[,2]
 ddssva$SV3 <- svseq$sv[,3]
 design(ddssva) <- formula(~ SV1 + SV2 + SV3 + condition)
+#
+
 ddssva <- DESeq(ddssva)
 
 dds <- ddssva
